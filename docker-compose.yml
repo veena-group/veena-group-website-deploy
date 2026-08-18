@@ -1,6 +1,7 @@
 services:
   traefik:
     image: traefik:v3.1
+    container_name: veena-traefik
     command:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
@@ -23,6 +24,7 @@ services:
 
   postgres:
     image: postgres:16-alpine
+    container_name: veena-postgres
     environment:
       POSTGRES_DB: central_dashboard
       POSTGRES_USER: ${DB_USERNAME}
@@ -39,6 +41,7 @@ services:
 
   backend:
     build: ./central-dashboard/backend
+    container_name: veena-central-dashboard-backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/central_dashboard
       DB_USERNAME: ${DB_USERNAME}
@@ -62,6 +65,7 @@ services:
   # dashboard.<their-domain> host. Add one more Host(...) clause here per new tenant.
   dashboard-frontend:
     build: ./central-dashboard/frontend
+    container_name: veena-central-dashboard-frontend
     depends_on:
       - backend
     restart: unless-stopped
@@ -75,6 +79,7 @@ services:
 
   llyods-site:
     build: ./llyods-chsl
+    container_name: veena-llyods-site
     restart: unless-stopped
     networks: [web]
     labels:
@@ -86,6 +91,7 @@ services:
 
   westcoast-site:
     build: ./westcoast
+    container_name: veena-westcoast-site
     restart: unless-stopped
     networks: [web]
     labels:
@@ -98,6 +104,7 @@ services:
   # --- Template for the next tenant site (copy, rename, uncomment) ---
   # newclient-site:
   #   build: ./newclient
+  #   container_name: veena-newclient-site
   #   restart: unless-stopped
   #   networks: [web]
   #   labels:

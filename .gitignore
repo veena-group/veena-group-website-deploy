@@ -1,0 +1,7 @@
+# Each of these is its own separate repo, not part of this one
+/central-dashboard/
+/llyods-chsl/
+/westcoast/
+
+# Real secrets — never commit
+.env

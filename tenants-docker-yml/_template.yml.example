@@ -1,8 +1,8 @@
 # Template for the next tenant site.
 #
-# 1. Copy this file to tenants/<newclient>.yml (drop the .example suffix)
+# 1. Copy this file to tenants-docker-yml/<newclient>.yml (drop the .example suffix)
 # 2. Replace every "newclient" below with the new tenant's short name
-# 3. Add "- tenants/<newclient>.yml" to the include: list in ../docker-compose.yml
+# 3. Add "- tenants-docker-yml/<newclient>.yml" to the include: list in ../docker-compose.yml
 #
 # That's it - no other file needs editing. The dashboard-frontend service in
 # ../docker-compose.yml is untouched; the dashboard-<newclient> router below points

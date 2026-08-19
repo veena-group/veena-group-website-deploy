@@ -1,6 +1,6 @@
 include:
-  - tenants/lloyds-garden.yml
-  - tenants/west-coast-avinash.yml
+  - tenants-docker-yml/lloyds-garden.yml
+ # - tenants-docker-yml/west-coast-avinash.yml
 
 x-service-defaults: &service-defaults
   restart: unless-stopped
@@ -9,7 +9,7 @@ x-service-defaults: &service-defaults
 services:
   traefik:
     <<: *service-defaults
-    image: traefik:v3.1
+    image: traefik:v2.1
     container_name: veena-traefik
     command:
       - --providers.docker=true
@@ -20,8 +20,10 @@ services:
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --certificatesresolvers.le.acme.httpchallenge=true
       - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
-      - --certificatesresolvers.le.acme.email=${ACME_EMAIL}
+    #  - --certificatesresolvers.le.acme.email=${ACME_EMAIL}
       - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+    environment:
+      - DOCKER_API_VERSION=1.40
     ports:
       - "80:80"
       - "443:443"
@@ -68,8 +70,8 @@ services:
   # The one shared central-dashboard app. Every tenant site's login page (and the Angular app
   # itself) talks to this same frontend+backend pair — just reachable at each tenant's own
   # dashboard.<their-domain> host. No tenant-specific Host() rule here: each tenant's own
-  # dashboard.<domain> router lives in its tenants/*.yml file and points at the "dashboard"
-  # service published below, so adding a tenant never requires editing this block.
+  # dashboard.<domain> router lives in its tenants-docker-yml/*.yml file and points at the
+  # "dashboard" service published below, so adding a tenant never requires editing this block.
   dashboard-frontend:
     <<: *service-defaults
     build: ./central-dashboard/frontend
@@ -80,9 +82,9 @@ services:
       - traefik.enable=true
       - traefik.http.services.dashboard.loadbalancer.server.port=80
 
-  # Tenant marketing sites (lloyds-garden-site, west-coast-avinash-site, ...) live in tenants/*.yml,
-  # pulled in via the include: list at the top of this file. To add a new tenant, see
-  # tenants/_template.yml.example.
+  # Tenant marketing sites (lloyds-garden-site, west-coast-avinash-site, ...) live in
+  # tenants-docker-yml/*.yml, pulled in via the include: list at the top of this file.
+  # To add a new tenant, see tenants-docker-yml/_template.yml.example.
 
 networks:
   web:

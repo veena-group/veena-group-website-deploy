@@ -1,0 +1,18 @@
+services:
+  lloyds-garden-site:
+    build: ../lloyds-garden
+    container_name: veena-lloyds-garden-site
+    restart: unless-stopped
+    networks: [web]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.lloyds-garden.rule=Host(`llyodschsl.com`) || Host(`www.llyodschsl.com`)
+      - traefik.http.routers.lloyds-garden.entrypoints=websecure
+      - traefik.http.routers.lloyds-garden.tls.certresolver=le
+      - traefik.http.services.lloyds-garden.loadbalancer.server.port=80
+      # This tenant's dashboard subdomain, routed to the shared dashboard-frontend container
+      # (see its "dashboard" service label in ../docker-compose.yml).
+      - traefik.http.routers.dashboard-lloyds-garden.rule=Host(`dashboard.llyodschsl.com`)
+      - traefik.http.routers.dashboard-lloyds-garden.entrypoints=websecure
+      - traefik.http.routers.dashboard-lloyds-garden.tls.certresolver=le
+      - traefik.http.routers.dashboard-lloyds-garden.service=dashboard

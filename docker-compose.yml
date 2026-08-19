@@ -1,5 +1,14 @@
+include:
+  - tenants/lloyds-garden.yml
+  - tenants/westcoast.yml
+
+x-service-defaults: &service-defaults
+  restart: unless-stopped
+  networks: [web]
+
 services:
   traefik:
+    <<: *service-defaults
     image: traefik:v3.1
     container_name: veena-traefik
     command:
@@ -19,10 +28,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-certs:/letsencrypt
-    restart: unless-stopped
-    networks: [web]
 
   postgres:
+    <<: *service-defaults
     image: postgres:16-alpine
     container_name: veena-postgres
     environment:
@@ -36,10 +44,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    restart: unless-stopped
-    networks: [web]
 
   backend:
+    <<: *service-defaults
     build: ./central-dashboard/backend
     container_name: veena-central-dashboard-backend
     environment:
@@ -56,64 +63,26 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    restart: unless-stopped
-    networks: [web]
     # No Traefik labels: only reached internally, via dashboard-frontend's /api proxy.
 
   # The one shared central-dashboard app. Every tenant site's login page (and the Angular app
   # itself) talks to this same frontend+backend pair — just reachable at each tenant's own
-  # dashboard.<their-domain> host. Add one more Host(...) clause here per new tenant.
+  # dashboard.<their-domain> host. No tenant-specific Host() rule here: each tenant's own
+  # dashboard.<domain> router lives in its tenants/*.yml file and points at the "dashboard"
+  # service published below, so adding a tenant never requires editing this block.
   dashboard-frontend:
+    <<: *service-defaults
     build: ./central-dashboard/frontend
     container_name: veena-central-dashboard-frontend
     depends_on:
       - backend
-    restart: unless-stopped
-    networks: [web]
     labels:
       - traefik.enable=true
-      - traefik.http.routers.dashboard.rule=Host(`dashboard.llyodschsl.com`) || Host(`dashboard.westcoastavinash.com`)
-      - traefik.http.routers.dashboard.entrypoints=websecure
-      - traefik.http.routers.dashboard.tls.certresolver=le
       - traefik.http.services.dashboard.loadbalancer.server.port=80
 
-  llyods-site:
-    build: ./llyods-chsl
-    container_name: veena-llyods-site
-    restart: unless-stopped
-    networks: [web]
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.llyods.rule=Host(`llyodschsl.com`) || Host(`www.llyodschsl.com`)
-      - traefik.http.routers.llyods.entrypoints=websecure
-      - traefik.http.routers.llyods.tls.certresolver=le
-      - traefik.http.services.llyods.loadbalancer.server.port=80
-
-  westcoast-site:
-    build: ./westcoast
-    container_name: veena-westcoast-site
-    restart: unless-stopped
-    networks: [web]
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.westcoast.rule=Host(`westcoastavinash.com`) || Host(`www.westcoastavinash.com`)
-      - traefik.http.routers.westcoast.entrypoints=websecure
-      - traefik.http.routers.westcoast.tls.certresolver=le
-      - traefik.http.services.westcoast.loadbalancer.server.port=80
-
-  # --- Template for the next tenant site (copy, rename, uncomment) ---
-  # newclient-site:
-  #   build: ./newclient
-  #   container_name: veena-newclient-site
-  #   restart: unless-stopped
-  #   networks: [web]
-  #   labels:
-  #     - traefik.enable=true
-  #     - traefik.http.routers.newclient.rule=Host(`newclient.com`) || Host(`www.newclient.com`)
-  #     - traefik.http.routers.newclient.entrypoints=websecure
-  #     - traefik.http.routers.newclient.tls.certresolver=le
-  #     - traefik.http.services.newclient.loadbalancer.server.port=80
-  # Also add: || Host(`dashboard.newclient.com`) to the dashboard-frontend router rule above.
+  # Tenant marketing sites (lloyds-garden-site, westcoast-site, ...) live in tenants/*.yml,
+  # pulled in via the include: list at the top of this file. To add a new tenant, see
+  # tenants/_template.yml.example.
 
 networks:
   web:

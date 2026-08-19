@@ -1,6 +1,6 @@
 # Each of these is its own separate repo, not part of this one
 /central-dashboard/
-/llyods-chsl/
+/lloyds-garden/
 /westcoast/
 
 # Real secrets — never commit

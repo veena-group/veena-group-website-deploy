@@ -1,0 +1,28 @@
+# Template for the next tenant site.
+#
+# 1. Copy this file to tenants/<newclient>.yml (drop the .example suffix)
+# 2. Replace every "newclient" below with the new tenant's short name
+# 3. Add "- tenants/<newclient>.yml" to the include: list in ../docker-compose.yml
+#
+# That's it - no other file needs editing. The dashboard-frontend service in
+# ../docker-compose.yml is untouched; the dashboard-<newclient> router below points
+# straight at its shared "dashboard" service.
+
+services:
+  newclient-site:
+    build: ../newclient
+    container_name: veena-newclient-site
+    restart: unless-stopped
+    networks: [web]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.newclient.rule=Host(`newclient.com`) || Host(`www.newclient.com`)
+      - traefik.http.routers.newclient.entrypoints=websecure
+      - traefik.http.routers.newclient.tls.certresolver=le
+      - traefik.http.services.newclient.loadbalancer.server.port=80
+      # This tenant's dashboard subdomain, routed to the shared dashboard-frontend container
+      # (see its "dashboard" service label in ../docker-compose.yml).
+      - traefik.http.routers.dashboard-newclient.rule=Host(`dashboard.newclient.com`)
+      - traefik.http.routers.dashboard-newclient.entrypoints=websecure
+      - traefik.http.routers.dashboard-newclient.tls.certresolver=le
+      - traefik.http.routers.dashboard-newclient.service=dashboard

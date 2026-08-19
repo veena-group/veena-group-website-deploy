@@ -9,7 +9,7 @@ x-service-defaults: &service-defaults
 services:
   traefik:
     <<: *service-defaults
-    image: traefik:v2.1
+    image: traefik:v2.11
     container_name: veena-traefik
     command:
       - --providers.docker=true

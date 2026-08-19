@@ -1,7 +1,7 @@
 # Each of these is its own separate repo, not part of this one
 /central-dashboard/
 /lloyds-garden/
-/westcoast/
+/west-coast-avinash/
 
 # Real secrets — never commit
 .env

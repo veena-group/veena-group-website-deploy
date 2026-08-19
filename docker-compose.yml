@@ -1,6 +1,6 @@
 include:
   - tenants/lloyds-garden.yml
-  - tenants/westcoast.yml
+  - tenants/west-coast-avinash.yml
 
 x-service-defaults: &service-defaults
   restart: unless-stopped
@@ -80,7 +80,7 @@ services:
       - traefik.enable=true
       - traefik.http.services.dashboard.loadbalancer.server.port=80
 
-  # Tenant marketing sites (lloyds-garden-site, westcoast-site, ...) live in tenants/*.yml,
+  # Tenant marketing sites (lloyds-garden-site, west-coast-avinash-site, ...) live in tenants/*.yml,
   # pulled in via the include: list at the top of this file. To add a new tenant, see
   # tenants/_template.yml.example.
 

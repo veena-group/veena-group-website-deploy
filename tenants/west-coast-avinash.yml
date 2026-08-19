@@ -1,0 +1,18 @@
+services:
+  west-coast-avinash-site:
+    build: ../west-coast-avinash
+    container_name: veena-west-coast-avinash-site
+    restart: unless-stopped
+    networks: [web]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.west-coast-avinash.rule=Host(`westcoastavinash.com`) || Host(`www.westcoastavinash.com`)
+      - traefik.http.routers.west-coast-avinash.entrypoints=websecure
+      - traefik.http.routers.west-coast-avinash.tls.certresolver=le
+      - traefik.http.services.west-coast-avinash.loadbalancer.server.port=80
+      # This tenant's dashboard subdomain, routed to the shared dashboard-frontend container
+      # (see its "dashboard" service label in ../docker-compose.yml).
+      - traefik.http.routers.dashboard-west-coast-avinash.rule=Host(`dashboard.westcoastavinash.com`)
+      - traefik.http.routers.dashboard-west-coast-avinash.entrypoints=websecure
+      - traefik.http.routers.dashboard-west-coast-avinash.tls.certresolver=le
+      - traefik.http.routers.dashboard-west-coast-avinash.service=dashboard

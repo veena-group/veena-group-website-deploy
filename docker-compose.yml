@@ -1,6 +1,6 @@
 include:
   - tenants-docker-yml/lloyds-garden.yml
- # - tenants-docker-yml/west-coast-avinash.yml
+  - tenants-docker-yml/west-coast-avinash.yml
 
 x-service-defaults: &service-defaults
   restart: unless-stopped
@@ -9,7 +9,7 @@ x-service-defaults: &service-defaults
 services:
   traefik:
     <<: *service-defaults
-    image: traefik:v2.11
+    image: traefik:v3.1
     container_name: veena-traefik
     command:
       - --providers.docker=true
@@ -20,10 +20,8 @@ services:
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --certificatesresolvers.le.acme.httpchallenge=true
       - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
-    #  - --certificatesresolvers.le.acme.email=${ACME_EMAIL}
+      - --certificatesresolvers.le.acme.email=${ACME_EMAIL}
       - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
-    environment:
-      - DOCKER_API_VERSION=1.40
     ports:
       - "80:80"
       - "443:443"

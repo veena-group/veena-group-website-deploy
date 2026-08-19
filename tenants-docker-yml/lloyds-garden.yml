@@ -4,6 +4,8 @@ services:
     container_name: veena-lloyds-garden-site
     restart: unless-stopped
     networks: [web]
+    depends_on:
+      - dashboard-frontend
     labels:
       - traefik.enable=true
       - traefik.http.routers.lloyds-garden.rule=Host(`lloydsgarden.in`) || Host(`www.lloydsgarden.in`)

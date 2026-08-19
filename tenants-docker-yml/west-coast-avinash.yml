@@ -4,6 +4,8 @@ services:
     container_name: veena-west-coast-avinash-site
     restart: unless-stopped
     networks: [web]
+    depends_on:
+      - dashboard-frontend
     labels:
       - traefik.enable=true
       - traefik.http.routers.west-coast-avinash.rule=Host(`westcoastavinash.com`) || Host(`www.westcoastavinash.com`)

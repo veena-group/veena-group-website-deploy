@@ -5,3 +5,6 @@
 
 # Real secrets — never commit
 .env
+
+# Personal notes, not part of the deploy repo
+Deployment steps.txt

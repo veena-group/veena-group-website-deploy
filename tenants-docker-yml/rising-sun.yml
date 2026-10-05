@@ -1,0 +1,20 @@
+services:
+  rising-sun-site:
+    build: ../rising-sun
+    container_name: veena-rising-sun-site
+    restart: unless-stopped
+    networks: [web]
+    depends_on:
+      - dashboard-frontend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.rising-sun.rule=Host(`risingsunabcd.com`) || Host(`www.risingsunabcd.com`)
+      - traefik.http.routers.rising-sun.entrypoints=websecure
+      - traefik.http.routers.rising-sun.tls.certresolver=le
+      - traefik.http.services.rising-sun.loadbalancer.server.port=80
+      # This tenant's dashboard subdomain, routed to the shared dashboard-frontend container
+      # (see its "dashboard" service label in ../docker-compose.yml).
+      - traefik.http.routers.dashboard-rising-sun.rule=Host(`dashboard.risingsunabcd.com`)
+      - traefik.http.routers.dashboard-rising-sun.entrypoints=websecure
+      - traefik.http.routers.dashboard-rising-sun.tls.certresolver=le
+      - traefik.http.routers.dashboard-rising-sun.service=dashboard

@@ -1,6 +1,7 @@
 include:
   - tenants-docker-yml/lloyds-garden.yml
   - tenants-docker-yml/west-coast-avinash.yml
+  - tenants-docker-yml/rising-sun.yml
 
 x-service-defaults: &service-defaults
   restart: unless-stopped

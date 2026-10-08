@@ -2,6 +2,8 @@
 /central-dashboard/
 /lloyds-garden/
 /west-coast-avinash/
+/rising-sun/
+/nityanand-baug/
 
 # Real secrets — never commit
 .env
